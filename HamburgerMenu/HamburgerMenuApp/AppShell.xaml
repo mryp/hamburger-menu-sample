@@ -1,0 +1,163 @@
+﻿<Page x:Name="Root"
+      x:Class="HamburgerMenuApp.AppShell"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:HamburgerMenuApp"
+      xmlns:controls="using:HamburgerMenuApp.Controls"
+      xmlns:triggers="using:HamburgerMenuApp.Triggers"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      KeyDown="AppShell_KeyDown"
+      TabNavigation="Cycle"
+      mc:Ignorable="d">
+
+    <!-- リソース -->
+    <Page.Resources>
+        <!-- メニューアイテムの表示テンプレート -->
+        <DataTemplate x:Key="NavMenuItemTemplate" x:DataType="controls:NavMenuItem">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <!-- 選択表示マーカー -->
+                <Rectangle x:Name="SelectedPipe"
+                           Width="6"
+                           Height="24"
+                           Margin="-2,0,0,0"
+                           Fill="{ThemeResource SystemControlForegroundAccentBrush}"
+                           Visibility="{x:Bind SelectedVis, Mode=TwoWay}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"/>
+                
+                <!-- ラベルとアイコンを表示 -->
+                <FontIcon x:Name="Glyph" FontSize="16" Glyph="{x:Bind SymbolAsChar}" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Label}"/>
+                <TextBlock x:Name="Text" Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="NoWrap" VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+        <!-- メニューアイテムの表示用テンプレート（10フィート版） -->
+        <DataTemplate x:Key="NavMenuItem10ftTemplate" x:DataType="controls:NavMenuItem">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <!-- ラベルとアイコンを表示 -->
+                <FontIcon x:Name="Glyph" FontSize="16" Glyph="{x:Bind SymbolAsChar}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="Text" Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="NoWrap" Margin="0,0,16,0"/>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <!-- ルートレイアウト -->
+    <Grid x:Name="LayoutRoot">
+        <!-- 状態変化トリガー -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <!-- 大サイズ画面 --> 
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.DisplayMode" Value="CompactInline"/>
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="True"/>
+                    </VisualState.Setters>
+                </VisualState>
+
+                <!-- 中サイズ画面 -->
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.DisplayMode" Value="CompactOverlay"/>
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="False"/>
+                    </VisualState.Setters>
+                </VisualState>
+
+                <!-- 小サイズ画面 -->
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.DisplayMode" Value="Overlay"/>
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="False"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup>
+                <VisualState>
+                    <!-- 10フィート画面 -->
+                    <VisualState.StateTriggers>
+                        <triggers:IsTenFootTrigger/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="368"/>
+                        <Setter Target="RootSplitView.CompactPaneLength" Value="96"/>
+                        <Setter Target="NavMenuList.Margin" Value="0,79,0,0"/>
+                        <Setter Target="frame.Margin" Value="0,27,48,27"/>
+                        <Setter Target="NavMenuList.ItemContainerStyle" Value="{StaticResource NavMenuItemContainer10ftStyle}"/>
+                        <Setter Target="NavMenuList.ItemTemplate" Value="{StaticResource NavMenuItem10ftTemplate}"/>
+                        <Setter Target="TogglePaneButton.Style" Value="{StaticResource SplitViewTogglePaneButton10ftStyle}"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!-- ハンバーガーボタン -->
+        <ToggleButton x:Name="TogglePaneButton"
+                      Canvas.ZIndex="100"
+                      TabIndex="1"
+                      Margin="0,0,0,0"
+                      Style="{StaticResource SplitViewTogglePaneButtonStyle}"
+                      IsChecked="{Binding IsPaneOpen, ElementName=RootSplitView, Mode=TwoWay}"
+                      Unchecked="TogglePaneButton_Unchecked"
+                      Checked="TogglePaneButton_Checked"
+                      AutomationProperties.Name="Navigation"
+                      ToolTipService.ToolTip="Navigation"/>
+
+        <!-- ナビゲーションコンテンツ -->
+        <SplitView x:Name="RootSplitView"
+                   DisplayMode="Inline"
+                   OpenPaneLength="256"
+                   PaneClosed="RootSplitView_PaneClosed"
+                   LightDismissOverlayMode="On"
+                   IsTabStop="False">
+
+            <!-- メニュー部 -->
+            <SplitView.Pane>
+                <!-- メニューアイテムリスト -->
+                <controls:NavMenuListView x:Name="NavMenuList"
+                                            TabIndex="3"
+                                            Margin="0,48,0,0"
+                                            ContainerContentChanging="NavMenuItemContainerContentChanging"
+                                            ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
+                                            ItemTemplate="{StaticResource NavMenuItemTemplate}"
+                                            ItemInvoked="NavMenuList_ItemInvoked"/>
+            </SplitView.Pane>
+
+            <!-- ボディ部 -->
+            <SplitView.Content>
+                <!-- OnNavigatingToPageで遷移するときに選択したページをこのフレームにセットする -->
+                <Frame x:Name="frame"
+                   Margin="0,0,0,0"
+                   Navigating="OnNavigatingToPage">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <NavigationThemeTransition>
+                                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                                    <EntranceNavigationTransitionInfo/>
+                                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                            </NavigationThemeTransition>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
+            </SplitView.Content>
+        </SplitView>
+    </Grid>
+</Page>

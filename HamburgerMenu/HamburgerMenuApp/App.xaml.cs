@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HamburgerMenuApp.Utils;
+using HamburgerMenuApp.Views;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +9,8 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -42,41 +46,64 @@ namespace HamburgerMenuApp
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                this.DebugSettings.EnableFrameRateCounter = true;
+                //this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-            Frame rootFrame = Window.Current.Content as Frame;
+            // Change minimum window size
+            ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 200));
 
-            // ウィンドウに既にコンテンツが表示されている場合は、アプリケーションの初期化を繰り返さずに、
-            // ウィンドウがアクティブであることだけを確認してください
-            if (rootFrame == null)
+            // Darken the window title bar using a color value to match app theme
+            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            if (titleBar != null)
             {
-                // ナビゲーション コンテキストとして動作するフレームを作成し、最初のページに移動します
-                rootFrame = new Frame();
+                Color titleBarColor = (Color)App.Current.Resources["SystemChromeMediumColor"];
+                titleBar.BackgroundColor = titleBarColor;
+                titleBar.ButtonBackgroundColor = titleBarColor;
+            }
 
-                rootFrame.NavigationFailed += OnNavigationFailed;
+            if (SystemInformationHelpers.IsTenFootExperience)
+            {
+                // Apply guidance from https://msdn.microsoft.com/windows/uwp/input-and-devices/designing-for-tv
+                ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+
+                this.Resources.MergedDictionaries.Add(new ResourceDictionary
+                {
+                    Source = new Uri("ms-appx:///Styles/TenFootStylesheet.xaml")
+                });
+            }
+
+            AppShell shell = Window.Current.Content as AppShell;
+
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (shell == null)
+            {
+                // Create a AppShell to act as the navigation context and navigate to the first page
+                shell = new AppShell();
+
+                // Set the default language
+                shell.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
+
+                shell.AppFrame.NavigationFailed += OnNavigationFailed;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: 以前中断したアプリケーションから状態を読み込みます
+                    //TODO: Load state from previously suspended application
                 }
-
-                // フレームを現在のウィンドウに配置します
-                Window.Current.Content = rootFrame;
             }
 
-            if (e.PrelaunchActivated == false)
+            // Place our app shell in the current Window
+            Window.Current.Content = shell;
+
+            if (shell.AppFrame.Content == null)
             {
-                if (rootFrame.Content == null)
-                {
-                    // ナビゲーション スタックが復元されない場合は、最初のページに移動します。
-                    // このとき、必要な情報をナビゲーション パラメーターとして渡して、新しいページを
-                    //構成します
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
-                }
-                // 現在のウィンドウがアクティブであることを確認します
-                Window.Current.Activate();
+                // When the navigation stack isn't restored, navigate to the first page
+                // suppressing the initial entrance animation.
+                shell.AppFrame.Navigate(typeof(BasicPage), e.Arguments, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
             }
+
+            // Ensure the current window is active
+            Window.Current.Activate();
         }
 
         /// <summary>
