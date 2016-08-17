@@ -9,10 +9,27 @@ using Windows.UI.Xaml.Controls;
 
 namespace HamburgerMenuApp.Controls
 {
+    /// <summary>
+    /// ナビゲーションメニューアイテム
+    /// </summary>
     class NavMenuItem : INotifyPropertyChanged
     {
+        private bool _isSelected;
+        private Visibility _selectedVis = Visibility.Collapsed;
+        
+        /// <summary>
+        /// ラベル
+        /// </summary>
         public string Label { get; set; }
+
+        /// <summary>
+        /// アイコン
+        /// </summary>
         public Symbol Symbol { get; set; }
+
+        /// <summary>
+        /// アイコンの文字データ
+        /// </summary>
         public char SymbolAsChar
         {
             get
@@ -20,8 +37,10 @@ namespace HamburgerMenuApp.Controls
                 return (char)this.Symbol;
             }
         }
-
-        private bool _isSelected;
+        
+        /// <summary>
+        /// 選択しているかどうか
+        /// </summary>
         public bool IsSelected
         {
             get { return _isSelected; }
@@ -33,7 +52,9 @@ namespace HamburgerMenuApp.Controls
             }
         }
 
-        private Visibility _selectedVis = Visibility.Collapsed;
+        /// <summary>
+        /// 選択表示を行っているかどうか
+        /// </summary>
         public Visibility SelectedVis
         {
             get { return _selectedVis; }
@@ -44,10 +65,25 @@ namespace HamburgerMenuApp.Controls
             }
         }
 
+        /// <summary>
+        /// 表示するページデータ
+        /// </summary>
         public Type DestPage { get; set; }
+
+        /// <summary>
+        /// ページに渡す引数
+        /// </summary>
         public object Arguments { get; set; }
 
+        /// <summary>
+        /// プロパティ変更通知イベント
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        /// <summary>
+        /// プロパティ変更通知
+        /// </summary>
+        /// <param name="propertyName"></param>
         public void OnPropertyChanged(string propertyName)
         {
             // Raise the PropertyChanged event, passing the name of the property whose value has changed.

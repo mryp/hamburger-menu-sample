@@ -13,12 +13,16 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace HamburgerMenuApp.Controls
 {
+    /// <summary>
+    /// コマンド機能付きページのヘッダコントロール
+    /// </summary>
     public sealed partial class PageHeader : UserControl
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public PageHeader()
         {
             this.InitializeComponent();
@@ -30,18 +34,26 @@ namespace HamburgerMenuApp.Controls
             };
         }
 
+        /// <summary>
+        /// メニュー部分のサイズ変更通知処理
+        /// </summary>
         private void Current_TogglePaneButtonSizeChanged(AppShell sender, Rect e)
         {
             this.titleBar.Margin = new Thickness(e.Right, 0, 0, 0);
         }
 
+        /// <summary>
+        /// ヘッダーオブジェクト
+        /// </summary>
         public UIElement HeaderContent
         {
             get { return (UIElement)GetValue(HeaderContentProperty); }
             set { SetValue(HeaderContentProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for HeaderContent.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// ヘッダーオブジェクトを返すプロパティ
+        /// </summary>
         public static readonly DependencyProperty HeaderContentProperty =
             DependencyProperty.Register("HeaderContent", typeof(UIElement), typeof(PageHeader), new PropertyMetadata(DependencyProperty.UnsetValue));
 

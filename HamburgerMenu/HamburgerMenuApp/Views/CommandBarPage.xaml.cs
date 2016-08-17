@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HamburgerMenuApp.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,41 +16,38 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=234238 を参照してください
-
 namespace HamburgerMenuApp.Views
 {
     /// <summary>
-    /// それ自体で使用できる空白ページまたはフレーム内に移動できる空白ページ。
+    /// コマンドバーを表示するページクラス
     /// </summary>
     public sealed partial class CommandBarPage : Page
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public CommandBarPage()
         {
             this.InitializeComponent();
             this.Loaded += CommandBarPage_Loaded;
         }
+
+        /// <summary>
+        /// 画面表示時イベント
+        /// </summary>
         private void CommandBarPage_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("topbar back=" + ((SolidColorBrush)topbar.Background).Color.ToString());
-            Debug.WriteLine("pageTitleContainer back=" + ((SolidColorBrush)pageTitleContainer.Background).Color.ToString());
-            Debug.WriteLine("bottombar back=" + ((SolidColorBrush)bottombar.Background).Color.ToString());
-            
-
-            double? diagonal = DisplayInformation.GetForCurrentView().DiagonalSizeInInches;
-
-            //move commandbar to page bottom on small screens
-            if (diagonal < 7)
+            if (SystemInformationHelpers.IsSmartPhoneDisplaySize)
             {
-                topbar.Visibility = Visibility.Collapsed;
-                pageTitleContainer.Visibility = Visibility.Visible;
-                bottombar.Visibility = Visibility.Visible;
+                mainCommandBar.Visibility = Visibility.Collapsed;
+                titleOnlyBar.Visibility = Visibility.Visible;
+                bottomCommandBar.Visibility = Visibility.Visible;
             }
             else
             {
-                topbar.Visibility = Visibility.Visible;
-                pageTitleContainer.Visibility = Visibility.Collapsed;
-                bottombar.Visibility = Visibility.Collapsed;
+                mainCommandBar.Visibility = Visibility.Visible;
+                titleOnlyBar.Visibility = Visibility.Collapsed;
+                bottomCommandBar.Visibility = Visibility.Collapsed;
             }
         }
     }

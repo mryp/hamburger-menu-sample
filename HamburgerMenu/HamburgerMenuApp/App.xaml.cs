@@ -22,13 +22,12 @@ using Windows.UI.Xaml.Navigation;
 namespace HamburgerMenuApp
 {
     /// <summary>
-    /// 既定の Application クラスを補完するアプリケーション固有の動作を提供します。
+    /// アプリ起動時処理クラス
     /// </summary>
     sealed partial class App : Application
     {
         /// <summary>
-        /// 単一アプリケーション オブジェクトを初期化します。これは、実行される作成したコードの
-        ///最初の行であるため、main() または WinMain() と論理的に等価です。
+        /// コンストラクタ
         /// </summary>
         public App()
         {
@@ -49,23 +48,25 @@ namespace HamburgerMenuApp
                 //this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-            // Change minimum window size
+            //アプリ最小サイズ設定
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 200));
-
-            // Darken the window title bar using a color value to match app theme
+            
+            //タイトルバーの色設定
             ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
             if (titleBar != null)
             {
-                Color titleBarColor = (Color)App.Current.Resources["SystemChromeMediumColor"];
+                Color titleBarColor = (Color)App.Current.Resources["SystemAltHighColor"];
                 titleBar.BackgroundColor = titleBarColor;
                 titleBar.ButtonBackgroundColor = titleBarColor;
+                titleBar.InactiveBackgroundColor = titleBarColor;
+                titleBar.ButtonInactiveBackgroundColor = titleBarColor;
             }
 
+            //10フィート画面の時は別のスタイルを適用する
             if (SystemInformationHelpers.IsTenFootExperience)
             {
                 // Apply guidance from https://msdn.microsoft.com/windows/uwp/input-and-devices/designing-for-tv
                 ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-
                 this.Resources.MergedDictionaries.Add(new ResourceDictionary
                 {
                     Source = new Uri("ms-appx:///Styles/TenFootStylesheet.xaml")
@@ -73,36 +74,26 @@ namespace HamburgerMenuApp
             }
 
             AppShell shell = Window.Current.Content as AppShell;
-
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
             if (shell == null)
             {
-                // Create a AppShell to act as the navigation context and navigate to the first page
+                //ナビゲーションフレームを生成する
                 shell = new AppShell();
-
-                // Set the default language
                 shell.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
-
                 shell.AppFrame.NavigationFailed += OnNavigationFailed;
-
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: Load state from previously suspended application
+                    //TODO: 休止からの復旧データがあれば読み込み
                 }
             }
-
-            // Place our app shell in the current Window
+            
             Window.Current.Content = shell;
-
             if (shell.AppFrame.Content == null)
             {
-                // When the navigation stack isn't restored, navigate to the first page
-                // suppressing the initial entrance animation.
+                //初期画面設定
                 shell.AppFrame.Navigate(typeof(BasicPage), e.Arguments, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
             }
 
-            // Ensure the current window is active
+            //アクティブにする
             Window.Current.Activate();
         }
 
@@ -113,7 +104,7 @@ namespace HamburgerMenuApp
         /// <param name="e">ナビゲーション エラーの詳細</param>
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+            throw new Exception("ページ遷移処理失敗 " + e.SourcePageType.FullName);
         }
 
         /// <summary>
@@ -126,7 +117,9 @@ namespace HamburgerMenuApp
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: アプリケーションの状態を保存してバックグラウンドの動作があれば停止します
+
+            //TODO: 休止時はここでデータを保存する
+
             deferral.Complete();
         }
     }

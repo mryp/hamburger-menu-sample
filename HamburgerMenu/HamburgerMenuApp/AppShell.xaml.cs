@@ -24,13 +24,13 @@ namespace HamburgerMenuApp
 {
 
     /// <summary>
-    /// The "chrome" layer of the app that provides top-level navigation with
-    /// proper keyboarding navigation.
+    /// ナビゲーションメニューを表示する親ページ
     /// </summary>
     public sealed partial class AppShell : Page
     {
-        private bool isPaddingAdded = true;
-        // Declare the top level nav items
+        /// <summary>
+        /// ナビゲーションメニューリスト
+        /// </summary>
         private List<NavMenuItem> navlist = new List<NavMenuItem>(
             new[]
             {
@@ -56,70 +56,63 @@ namespace HamburgerMenuApp
                 */
             });
 
+        /// <summary>
+        /// インスタンス取得オブジェクト
+        /// </summary>
         public static AppShell Current = null;
 
         /// <summary>
-        /// Initializes a new instance of the AppShell, sets the static 'Current' reference,
-        /// adds callbacks for Back requests and changes in the SplitView's DisplayMode, and
-        /// provide the nav menu list with the data to display.
+        /// メインコンテンツ部のフレームオブジェクト
+        /// </summary>
+        public Frame AppFrame
+        {
+            get { return this.frame; }
+        }
+
+        /// <summary>
+        /// メニューの表示領域
+        /// </summary>
+        public Rect TogglePaneButtonRect
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// ナビゲーションメニュー開閉イベント
+        /// </summary>
+        public event TypedEventHandler<AppShell, Rect> TogglePaneButtonRectChanged;
+
+        /// <summary>
+        /// コンストラクタ
         /// </summary>
         public AppShell()
         {
             this.InitializeComponent();
 
+            //起動時の初期化
             this.Loaded += (sender, args) =>
             {
                 Current = this;
 
                 this.CheckTogglePaneButtonSizeChanged();
-
-                var titleBar = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().TitleBar;
-                titleBar.IsVisibleChanged += TitleBar_IsVisibleChanged;
             };
 
-            this.RootSplitView.RegisterPropertyChangedCallback(
-                SplitView.DisplayModeProperty,
-                (s, a) =>
-                {
-                    // Ensure that we update the reported size of the TogglePaneButton when the SplitView's
-                    // DisplayMode changes.
-                    this.CheckTogglePaneButtonSizeChanged();
-                });
+            //ディスプレイモード変更イベント発生時
+            this.RootSplitView.RegisterPropertyChangedCallback(SplitView.DisplayModeProperty, (s, a) => {
+                this.CheckTogglePaneButtonSizeChanged();
+            });
 
+            //タイトルバーの戻るボタン処理
             SystemNavigationManager.GetForCurrentView().BackRequested += SystemNavigationManager_BackRequested;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-
-
+            
+            //ナビゲーションメニュー一覧設定
             NavMenuList.ItemsSource = navlist;
         }
 
-        public Frame AppFrame { get { return this.frame; } }
-
         /// <summary>
-        /// Invoked when window title bar visibility changes, such as after loading or in tablet mode
-        /// Ensures correct padding at window top, between title bar and app content
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void TitleBar_IsVisibleChanged(Windows.ApplicationModel.Core.CoreApplicationViewTitleBar sender, object args)
-        {
-            if (!this.isPaddingAdded && sender.IsVisible)
-            {
-                //add extra padding between window title bar and app content
-                double extraPadding = (Double)App.Current.Resources["DesktopWindowTopPadding"];
-                this.isPaddingAdded = true;
-
-                Thickness margin = NavMenuList.Margin;
-                NavMenuList.Margin = new Thickness(margin.Left, margin.Top + extraPadding, margin.Right, margin.Bottom);
-                margin = AppFrame.Margin;
-                AppFrame.Margin = new Thickness(margin.Left, margin.Top + extraPadding, margin.Right, margin.Bottom);
-                margin = TogglePaneButton.Margin;
-                TogglePaneButton.Margin = new Thickness(margin.Left, margin.Top + extraPadding, margin.Right, margin.Bottom);
-            }
-        }
-
-        /// <summary>
-        /// Default keyboard focus movement for any unhandled keyboarding
+        /// キーボードイベント
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -140,14 +133,12 @@ namespace HamburgerMenuApp
                 case Windows.System.VirtualKey.NavigationRight:
                     direction = FocusNavigationDirection.Right;
                     break;
-
                 case Windows.System.VirtualKey.Up:
                 case Windows.System.VirtualKey.GamepadDPadUp:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
                 case Windows.System.VirtualKey.NavigationUp:
                     direction = FocusNavigationDirection.Up;
                     break;
-
                 case Windows.System.VirtualKey.Down:
                 case Windows.System.VirtualKey.GamepadDPadDown:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
@@ -158,6 +149,7 @@ namespace HamburgerMenuApp
 
             if (direction != FocusNavigationDirection.None)
             {
+                //フォーカス変更
                 var control = FocusManager.FindNextFocusableElement(direction) as Control;
                 if (control != null)
                 {
@@ -169,6 +161,11 @@ namespace HamburgerMenuApp
 
         #region BackRequested Handlers
 
+        /// <summary>
+        /// 戻るボタン押下イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SystemNavigationManager_BackRequested(object sender, BackRequestedEventArgs e)
         {
             bool handled = e.Handled;
@@ -176,17 +173,20 @@ namespace HamburgerMenuApp
             e.Handled = handled;
         }
 
+        /// <summary>
+        /// 戻るボタン押下処理
+        /// </summary>
+        /// <param name="handled">処理を行ったかどうか</param>
         private void BackRequested(ref bool handled)
         {
-            // Get a hold of the current frame so that we can inspect the app back stack.
-
             if (this.AppFrame == null)
+            {
                 return;
+            }
 
-            // Check to see if this is the top-most page on the app back stack.
             if (this.AppFrame.CanGoBack && !handled)
             {
-                // If not, set the event to handled and go back to the previous page in the app.
+                //戻れるときはコンテンツフレームのほうを戻す
                 handled = true;
                 this.AppFrame.GoBack();
             }
@@ -197,7 +197,7 @@ namespace HamburgerMenuApp
         #region Navigation
 
         /// <summary>
-        /// Navigate to the Page for the selected <paramref name="listViewItem"/>.
+        /// メニューアイテムを選択したとき
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="listViewItem"></param>
@@ -209,7 +209,6 @@ namespace HamburgerMenuApp
             }
 
             var item = (NavMenuItem)((NavMenuListView)sender).ItemFromContainer(listViewItem);
-
             if (item != null)
             {
                 item.IsSelected = true;
@@ -222,8 +221,7 @@ namespace HamburgerMenuApp
         }
 
         /// <summary>
-        /// Ensures the nav menu reflects reality when navigation is triggered outside of
-        /// the nav menu buttons.
+        /// コンテンツフレームで画面遷移を行うときのイベント
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -231,19 +229,21 @@ namespace HamburgerMenuApp
         {
             if (e.NavigationMode == NavigationMode.Back)
             {
+                //違うページを探す
                 var item = (from p in this.navlist where p.DestPage == e.SourcePageType select p).SingleOrDefault();
                 if (item == null && this.AppFrame.BackStackDepth > 0)
                 {
-                    // In cases where a page drills into sub-pages then we'll highlight the most recent
-                    // navigation menu item that appears in the BackStack
                     foreach (var entry in this.AppFrame.BackStack.Reverse())
                     {
                         item = (from p in this.navlist where p.DestPage == entry.SourcePageType select p).SingleOrDefault();
                         if (item != null)
+                        {
                             break;
+                        }
                     }
                 }
 
+                //選択状態を切り替える
                 foreach (var i in navlist)
                 {
                     i.IsSelected = false;
@@ -253,11 +253,8 @@ namespace HamburgerMenuApp
                     item.IsSelected = true;
                 }
 
+                //選択切り替え
                 var container = (ListViewItem)NavMenuList.ContainerFromItem(item);
-
-                // While updating the selection state of the item prevent it from taking keyboard focus.  If a
-                // user is invoking the back button via the keyboard causing the selected nav menu item to change
-                // then focus will remain on the back button.
                 if (container != null) container.IsTabStop = false;
                 NavMenuList.SetSelectedItem(container);
                 if (container != null) container.IsTabStop = true;
@@ -266,21 +263,9 @@ namespace HamburgerMenuApp
 
         #endregion
 
-        public Rect TogglePaneButtonRect
-        {
-            get;
-            private set;
-        }
 
         /// <summary>
-        /// An event to notify listeners when the hamburger button may occlude other content in the app.
-        /// The custom "PageHeader" user control is using this.
-        /// </summary>
-        public event TypedEventHandler<AppShell, Rect> TogglePaneButtonRectChanged;
-
-        /// <summary>
-        /// Public method to allow pages to open SplitView's pane.
-        /// Used for custom app shortcuts like navigating left from page's left-most item
+        /// メニューを開く
         /// </summary>
         public void OpenNavePane()
         {
@@ -288,7 +273,7 @@ namespace HamburgerMenuApp
         }
 
         /// <summary>
-        /// Hides divider when nav pane is closed.
+        /// メニューが閉じられたときの処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
@@ -297,8 +282,7 @@ namespace HamburgerMenuApp
         }
 
         /// <summary>
-        /// Callback when the SplitView's Pane is toggled closed.  When the Pane is not visible
-        /// then the floating hamburger may be occluding other content in the app unless it is aware.
+        /// メニューを閉じるときの処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -308,8 +292,7 @@ namespace HamburgerMenuApp
         }
 
         /// <summary>
-        /// Callback when the SplitView's Pane is toggled opened.
-        /// Restores divider's visibility and ensures that margins around the floating hamburger are correctly set.
+        /// メニューを開くときの処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -319,8 +302,7 @@ namespace HamburgerMenuApp
         }
 
         /// <summary>
-        /// Check for the conditions where the navigation pane does not occupy the space under the floating
-        /// hamburger button and trigger the event.
+        /// メニューの開閉とディスプレイによって表示状態を決定する
         /// </summary>
         private void CheckTogglePaneButtonSizeChanged()
         {
@@ -339,14 +321,12 @@ namespace HamburgerMenuApp
             var handler = this.TogglePaneButtonRectChanged;
             if (handler != null)
             {
-                // handler(this, this.TogglePaneButtonRect);
                 handler.DynamicInvoke(this, this.TogglePaneButtonRect);
             }
         }
 
         /// <summary>
-        /// Enable accessibility on each nav menu item by setting the AutomationProperties.Name on each container
-        /// using the associated Label of each item.
+        /// ナビゲーションメニューに表示する項目変更イベント処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>

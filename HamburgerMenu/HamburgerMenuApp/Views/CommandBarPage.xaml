@@ -42,7 +42,7 @@
             <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <CommandBar x:Name="topbar" Visibility="Collapsed" HorizontalContentAlignment="Stretch">
+        <CommandBar x:Name="mainCommandBar" Visibility="Collapsed" HorizontalContentAlignment="Stretch">
             <AppBarButton Icon="Edit" Label="Edit"/>
             <AppBarButton Icon="Delete" Label="Delete"/>
             <AppBarSeparator/>
@@ -64,7 +64,7 @@
         </CommandBar>
 
         <!-- タイトルバーのみ -->
-        <ctl:PageHeader x:Name="pageTitleContainer" Visibility="Collapsed">
+        <ctl:PageHeader x:Name="titleOnlyBar" Visibility="Collapsed">
             <ctl:PageHeader.HeaderContent>
                 <Border BorderBrush="{x:Null}" Height="48">
                     <TextBlock x:Name="AltHeaderTextBlock" Text="コマンドバーのみ" Style="{StaticResource PageTitleTextBlockStyle}"/>
@@ -78,7 +78,7 @@
         </Grid>
 
         <!-- 画面下部アクションバーのみ -->
-        <CommandBar x:Name="bottombar" Grid.Row="2" Visibility="Collapsed" HorizontalContentAlignment="Stretch">
+        <CommandBar x:Name="bottomCommandBar" Grid.Row="2" Visibility="Collapsed" HorizontalContentAlignment="Stretch">
             <AppBarButton Icon="Edit" Label="Edit"/>
             <AppBarButton Icon="Delete" Label="Delete"/>
             <AppBarSeparator/>

@@ -15,31 +15,27 @@ using Windows.UI.Xaml.Media.Animation;
 namespace HamburgerMenuApp.Controls
 {
     /// <summary>
-    /// A specialized ListView to represent the items in the navigation menu.
+    /// ナビゲーションメニューアイテムを一覧表示するリストビューコントロール
     /// </summary>
-    /// <remarks>
-    /// This class handles the following:
-    /// 1. Sizes the panel that hosts the items so they fit in the hosting pane.  Otherwise, the keyboard
-    ///    may appear cut off on one side b/c the Pane clips instead of affecting layout.
-    /// 2. Provides a single selection experience where keyboard focus can move without changing selection.
-    ///    Both the 'Space' and 'Enter' keys will trigger selection.  The up/down arrow keys can move
-    ///    keyboard focus without triggering selection.  This is different than the default behavior when
-    ///    SelectionMode == Single.  The default behavior for a ListView in single selection requires using
-    ///    the Ctrl + arrow key to move keyboard focus without triggering selection.  Users won't expect
-    ///    this type of keyboarding model on the nav menu.
-    /// </remarks>
     class NavMenuListView : ListView
     {
         private SplitView splitViewHost;
 
+        /// <summary>
+        /// メニューアイテム選択イベント
+        /// </summary>
+        public event EventHandler<ListViewItem> ItemInvoked;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public NavMenuListView()
         {
             this.SelectionMode = ListViewSelectionMode.Single;
             this.SingleSelectionFollowsFocus = false;
             this.IsItemClickEnabled = true;
             this.ItemClick += ItemClickedHandler;
-
-            // Locate the hosting SplitView control
+            
             this.Loaded += (s, a) =>
             {
                 var parent = VisualTreeHelper.GetParent(this);
@@ -51,23 +47,24 @@ namespace HamburgerMenuApp.Controls
                 if (parent != null)
                 {
                     this.splitViewHost = parent as SplitView;
-
+                    
                     splitViewHost.RegisterPropertyChangedCallback(SplitView.IsPaneOpenProperty, (sender, args) =>
                     {
                         this.OnPaneToggled();
                     });
-
                     splitViewHost.RegisterPropertyChangedCallback(SplitView.DisplayModeProperty, (sender, args) =>
                     {
                         this.OnPaneToggled();
                     });
-
-                    // Call once to ensure we're in the correct state
+                    
                     this.OnPaneToggled();
                 }
             };
         }
 
+        /// <summary>
+        /// コントロールテンプレート適用時イベント
+        /// </summary>
         protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -83,8 +80,7 @@ namespace HamburgerMenuApp.Controls
         }
 
         /// <summary>
-        /// Mark the <paramref name="item"/> as selected and ensures everything else is not.
-        /// If the <paramref name="item"/> is null then everything is unselected.
+        /// 指定したリストアイテムを選択状態にする
         /// </summary>
         /// <param name="item"></param>
         public void SetSelectedItem(ListViewItem item)
@@ -110,13 +106,7 @@ namespace HamburgerMenuApp.Controls
         }
 
         /// <summary>
-        /// Occurs when an item has been selected
-        /// </summary>
-        public event EventHandler<ListViewItem> ItemInvoked;
-
-        /// <summary>
-        /// Custom keyboarding logic to enable movement via the arrow keys without triggering selection 
-        /// until a 'Space' or 'Enter' key is pressed. 
+        /// キーイベント処理
         /// </summary>
         /// <param name="e"></param>
         protected override void OnKeyDown(KeyRoutedEventArgs e)
@@ -168,6 +158,11 @@ namespace HamburgerMenuApp.Controls
             }
         }
 
+        /// <summary>
+        /// メニューアイテムをクリックしたとき
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ItemClickedHandler(object sender, ItemClickEventArgs e)
         {
             // Triggered when the item is selected using something other than a keyboard
@@ -175,6 +170,10 @@ namespace HamburgerMenuApp.Controls
             this.InvokeItem(item);
         }
 
+        /// <summary>
+        /// 指定したアイテムを選択状態にする
+        /// </summary>
+        /// <param name="focusedItem"></param>
         private void InvokeItem(object focusedItem)
         {
             this.SetSelectedItem(focusedItem as ListViewItem);
@@ -194,8 +193,7 @@ namespace HamburgerMenuApp.Controls
         }
 
         /// <summary>
-        /// Re-size the ListView's Panel when the SplitView is compact so the items
-        /// will fit within the visible space and correctly display a keyboard focus rect.
+        /// 画面サイズ変更時等により表示状態をセットしなおす
         /// </summary>
         private void OnPaneToggled()
         {
