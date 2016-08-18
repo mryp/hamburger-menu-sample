@@ -18,8 +18,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=234238 を参照してください
-
 namespace HamburgerMenuApp
 {
 
@@ -37,13 +35,13 @@ namespace HamburgerMenuApp
                 new NavMenuItem()
                 {
                     Symbol = Symbol.Contact,
-                    Label = "Basic Page",
+                    Label = "コンテンツのみビュー",
                     DestPage = typeof(BasicPage)
                 },
                 new NavMenuItem()
                 {
                     Symbol = Symbol.Edit,
-                    Label = "CommandBar Page",
+                    Label = "コマンドバーありビュー",
                     DestPage = typeof(CommandBarPage)
                 },
                 /*
@@ -109,6 +107,19 @@ namespace HamburgerMenuApp
             
             //ナビゲーションメニュー一覧設定
             NavMenuList.ItemsSource = navlist;
+            NavMenuList.SelectedIndex = 0;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            this.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
+            if (this.AppFrame.Content == null)
+            {
+                //初期画面設定
+                this.AppFrame.Navigate(typeof(BasicPage), null, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+            }
         }
 
         /// <summary>

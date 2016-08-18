@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Navigation;
 namespace HamburgerMenuApp.Views
 {
     /// <summary>
-    /// コマンドバーを表示するページクラス
+    /// コマンドバーを表示するページ
     /// </summary>
     public sealed partial class CommandBarPage : Page
     {

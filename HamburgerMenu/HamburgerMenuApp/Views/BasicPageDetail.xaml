@@ -1,8 +1,8 @@
 ﻿<Page
-    x:Class="HamburgerMenuApp.Views.BasicPage"
+    x:Class="HamburgerMenuApp.Views.BasicPageDetail"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ctl="using:HamburgerMenuApp.Controls"
+    xmlns:local="using:HamburgerMenuApp.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -32,9 +32,6 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <StackPanel>
-            <Button Margin="0,48,0,48" Content="AppFrameで遷移" Click="ButtonAppFrame_Click"/>
-            <Button Margin="0,0,0,48" Content="Frameで遷移" Click="ButtonFrame_Click"/>
-        </StackPanel>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="詳細の中身！" />
     </Grid>
 </Page>

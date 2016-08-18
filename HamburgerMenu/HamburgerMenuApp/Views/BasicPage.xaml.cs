@@ -13,18 +13,26 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=234238 を参照してください
-
 namespace HamburgerMenuApp.Views
 {
     /// <summary>
-    /// それ自体で使用できる空白ページまたはフレーム内に移動できる空白ページ。
+    /// コンテンツのみ表示するページ
     /// </summary>
     public sealed partial class BasicPage : Page
     {
         public BasicPage()
         {
             this.InitializeComponent();
+        }
+
+        private void ButtonAppFrame_Click(object sender, RoutedEventArgs e)
+        {
+            AppShell.Current.AppFrame.Navigate(typeof(BasicPageDetail));
+        }
+
+        private void ButtonFrame_Click(object sender, RoutedEventArgs e)
+        {
+            AppShell.Current.Frame.Navigate(typeof(BasicPageDetail));
         }
     }
 }

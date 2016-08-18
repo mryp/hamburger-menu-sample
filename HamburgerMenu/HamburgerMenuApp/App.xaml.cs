@@ -26,6 +26,8 @@ namespace HamburgerMenuApp
     /// </summary>
     sealed partial class App : Application
     {
+        private Frame m_rootFrame;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -73,26 +75,23 @@ namespace HamburgerMenuApp
                 });
             }
 
-            AppShell shell = Window.Current.Content as AppShell;
-            if (shell == null)
+            //フレームを生成
+            m_rootFrame = Window.Current.Content as Frame;
+            if (m_rootFrame == null)
             {
-                //ナビゲーションフレームを生成する
-                shell = new AppShell();
-                shell.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
-                shell.AppFrame.NavigationFailed += OnNavigationFailed;
+                m_rootFrame = new Frame();
+                m_rootFrame.NavigationFailed += OnNavigationFailed;
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: 休止からの復旧データがあれば読み込み
                 }
             }
-            
-            Window.Current.Content = shell;
-            if (shell.AppFrame.Content == null)
+            if (m_rootFrame.Content == null)
             {
-                //初期画面設定
-                shell.AppFrame.Navigate(typeof(BasicPage), e.Arguments, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+                m_rootFrame.Navigate(typeof(AppShell), e.Arguments);
             }
-
+            Window.Current.Content = m_rootFrame;
+            
             //アクティブにする
             Window.Current.Activate();
         }

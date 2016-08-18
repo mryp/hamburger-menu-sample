@@ -109,6 +109,9 @@
     <Compile Include="Views\BasicPage.xaml.cs">
       <DependentUpon>BasicPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\BasicPageDetail.xaml.cs">
+      <DependentUpon>BasicPageDetail.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CommandBarPage.xaml.cs">
       <DependentUpon>CommandBarPage.xaml</DependentUpon>
     </Compile>
@@ -152,6 +155,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Views\BasicPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BasicPageDetail.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
