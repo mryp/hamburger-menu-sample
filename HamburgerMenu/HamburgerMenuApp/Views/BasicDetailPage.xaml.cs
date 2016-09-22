@@ -49,7 +49,7 @@ namespace HamburgerMenuApp.Views
 
         private void MainPage_BackRequested(object sender, BackRequestedEventArgs e)
         {
-            if (Frame.CanGoBack)
+            if (this.Frame != AppShell.Current.AppFrame && Frame.CanGoBack)
             {
                 Frame.GoBack();
                 e.Handled = true;
