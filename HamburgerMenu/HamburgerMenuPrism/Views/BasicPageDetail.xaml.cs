@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prism.Windows.Mvvm;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,12 +15,12 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace HamburgerMenuApp.Views
+namespace HamburgerMenuPrism.Views
 {
     /// <summary>
     /// 詳細画面ページ
     /// </summary>
-    public sealed partial class BasicPageDetail : Page
+    public sealed partial class BasicPageDetail : SessionStateAwarePage
     {
         public BasicPageDetail()
         {

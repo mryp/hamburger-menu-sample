@@ -1,4 +1,5 @@
-﻿        using System;
+﻿using HamburgerMenuApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,19 +21,15 @@ namespace HamburgerMenuApp.Views
     /// </summary>
     public sealed partial class BasicPage : Page
     {
+        public BasicPageViewModel ViewModel
+        {
+            get { return this.DataContext as BasicPageViewModel; }
+        }
+
         public BasicPage()
         {
             this.InitializeComponent();
-        }
-
-        private void ButtonAppFrame_Click(object sender, RoutedEventArgs e)
-        {
-            AppShell.Current.AppFrame.Navigate(typeof(BasicPageDetail));
-        }
-
-        private void ButtonFrame_Click(object sender, RoutedEventArgs e)
-        {
-            AppShell.Current.Frame.Navigate(typeof(BasicPageDetail));
+            this.DataContext = new BasicPageViewModel();
         }
     }
 }

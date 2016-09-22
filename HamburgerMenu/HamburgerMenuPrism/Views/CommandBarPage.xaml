@@ -1,10 +1,12 @@
-﻿<Page
-    x:Class="HamburgerMenuApp.Views.CommandBarPage"
+﻿<prismMvvm:SessionStateAwarePage 
+    x:Class="HamburgerMenuPrism.Views.CommandBarPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ctl="using:HamburgerMenuApp.Controls"
+    xmlns:ctl="using:HamburgerMenuPrism.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prismMvvm="using:Prism.Windows.Mvvm"
+    prismMvvm:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -74,7 +76,7 @@
 
         <!-- ボディ部 -->        
         <Grid x:Name="ContentContainer" Grid.Row="1" EntranceNavigationTransitionInfo.IsTargetElement="True" Margin="24,0">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{x:Bind ViewModel.Title}"/>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Contents!"/>
         </Grid>
 
         <!-- 画面下部アクションバーのみ -->
@@ -90,4 +92,4 @@
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Grid>
-</Page>
+</prismMvvm:SessionStateAwarePage>

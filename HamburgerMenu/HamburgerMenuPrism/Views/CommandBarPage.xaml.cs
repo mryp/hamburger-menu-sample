@@ -1,5 +1,5 @@
-﻿using HamburgerMenuApp.Utils;
-using HamburgerMenuApp.ViewModels;
+﻿using HamburgerMenuPrism.Utils;
+using Prism.Windows.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,18 +17,13 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace HamburgerMenuApp.Views
+namespace HamburgerMenuPrism.Views
 {
     /// <summary>
     /// コマンドバーを表示するページ
     /// </summary>
-    public sealed partial class CommandBarPage : Page
+    public sealed partial class CommandBarPage : SessionStateAwarePage
     {
-        public CommandBarPageViewModel ViewModel
-        {
-            get { return this.DataContext as CommandBarPageViewModel; }
-        }
-
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -36,7 +31,6 @@ namespace HamburgerMenuApp.Views
         {
             this.InitializeComponent();
             this.Loaded += CommandBarPage_Loaded;
-            this.DataContext = new CommandBarPageViewModel();
         }
 
         /// <summary>
