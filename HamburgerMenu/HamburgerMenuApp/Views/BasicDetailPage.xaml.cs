@@ -51,8 +51,8 @@ namespace HamburgerMenuApp.Views
         {
             if (this.Frame != AppShell.Current.AppFrame && Frame.CanGoBack)
             {
-                Frame.GoBack();
                 e.Handled = true;
+                Frame.GoBack();
             }
         }
     }
